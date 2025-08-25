@@ -15,7 +15,7 @@ export default function Sidebar({ currentView, setCurrentView, tasks }) {
       if (view === 'overview') {
         counts[view] = validTasks.filter(t => ['reviewing', 'assigning', 'inprogress', 'auditing', 'rechecking', 'issuing'].includes(t.status)).length;
       } else if (view === 'deleted') {
-        counts[view] = 0;
+        counts[view] = 0; // 回收站功能后续实现
       } else {
         counts[view] = validTasks.filter(t => t.status === view).length;
       }

@@ -48,6 +48,7 @@ const Auth = () => {
   );
 };
 
+// --- 关键修复：在这里添加回 initialCreateState 的定义 ---
 const initialCreateState = {
   customTaskId: 'HB',
   projectName: '',
@@ -59,6 +60,7 @@ const initialCreateState = {
   contractualDueDate: '',
   createdAt: formatDate(new Date()),
 };
+
 
 function App() {
   const [session, setSession] = useState(null);
@@ -87,14 +89,21 @@ function App() {
     setAppLoading(true);
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session) fetchProfile(session.user);
+      if (session) {
+        fetchProfile(session.user);
+      }
       setAppLoading(false);
     });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) fetchProfile(session.user);
-      else setProfile(null);
+      if (session) {
+        fetchProfile(session.user);
+      } else {
+        setProfile(null);
+      }
     });
+
     return () => subscription.unsubscribe();
   }, [fetchProfile]);
   
@@ -106,22 +115,23 @@ function App() {
         setTasks(data || []);
     } catch (error) {
         alert('获取任务数据失败: ' + error.message);
+        console.error('获取任务失败:', error);
     } finally {
         setTasksLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (session) fetchTasks();
+    if (session) {
+      fetchTasks();
+    }
   }, [session, fetchTasks]);
 
   const showToast = useCallback((message) => {
-    setToast({ show: true, message });
-    setTimeout(() => setToast({ show: false, message: '' }), 3000);
-  }, []);
-  
-  const handleTaskDataChange = useCallback((field, value) => {
-    setEditingTask(prevTask => ({ ...prevTask, [field]: value }));
+    setToast({ show: true, message: message });
+    setTimeout(() => {
+      setToast({ show: false, message: '' });
+    }, 3000);
   }, []);
 
   const handleCloseModals = useCallback(() => {
@@ -152,7 +162,7 @@ function App() {
   }, []);
 
   const handleOpenActionModal = useCallback((task) => {
-    setActionModalState({ isOpen: true, task });
+    setActionModalState({ isOpen: true, task: task });
   }, []);
   
   const handleTaskAction = useCallback((actionType, task) => {
@@ -164,18 +174,42 @@ function App() {
       alert(`删除功能待实现 (任务: ${task.projectName})`);
     }
   }, [handleCloseModals, handleOpenEditModal]);
+
+  // 这是在 App 组件内部新增的函数，用来处理 TaskModal 中的数据变化
+  const handleTaskDataChange = useCallback((field, value) => {
+    setEditingTask(prevTask => ({
+      ...prevTask,
+      [field]: value
+    }));
+  }, []);
   
-  if (appLoading) return <div className="w-screen h-screen flex items-center justify-center text-lg">正在加载应用...</div>;
-  if (!session) return <Auth />;
+  if (appLoading) {
+    return <div className="w-screen h-screen flex items-center justify-center text-lg">正在加载应用...</div>;
+  }
+  
+  if (!session) {
+    return <Auth />;
+  }
 
   return (
     <div ref={appRef} className="h-screen bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 p-4 lg:p-6 flex flex-col gap-4">
       <Header session={session} profile={profile} />
+      
       <div className="bg-white dark:bg-slate-800/50 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col flex-grow min-h-0">
         <ActionBar onCreateTask={handleOpenCreateModal} />
-        <Sidebar currentView={currentView} setCurrentView={setCurrentView} tasks={tasks} />
-        <TaskList isLoading={tasksLoading} tasks={tasks} currentView={currentView} onOpenActionModal={handleOpenActionModal} />
+        <Sidebar 
+          currentView={currentView} 
+          setCurrentView={setCurrentView}
+          tasks={tasks}
+        />
+        <TaskList 
+          isLoading={tasksLoading}
+          tasks={tasks}
+          currentView={currentView}
+          onOpenActionModal={handleOpenActionModal}
+        />
       </div>
+
       {isTaskModalOpen && (
         <TaskModal 
           taskData={editingTask}
@@ -184,7 +218,13 @@ function App() {
           onSaveSuccess={handleSaveSuccess}
         />
       )}
-      <ActionModal state={actionModalState} onClose={handleCloseModals} onActionSelect={handleTaskAction} />
+
+      <ActionModal
+        state={actionModalState}
+        onClose={handleCloseModals}
+        onActionSelect={handleTaskAction}
+      />
+      
       <Toast message={toast.message} show={toast.show} />
     </div>
   );

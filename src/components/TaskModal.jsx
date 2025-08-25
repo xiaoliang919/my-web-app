@@ -111,15 +111,15 @@ export default function TaskModal({ taskData, onDataChange, onClose, onSaveSucce
              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-5 border-t border-gray-200 dark:border-gray-700 pt-5 mt-1">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">合同金额 (元)</label>
-                  <input type="number" name="contractAmount" value={taskData.contractAmount} onChange={handleInputChange} className={`mt-1 ${inputStyle}`} placeholder="请输入金额" step="any" />
+                  <input type="number" name="contractAmount" value={taskData.contractAmount || ''} onChange={handleInputChange} className={`mt-1 ${inputStyle}`} placeholder="请输入金额" step="any" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">任务下达日期</label>
-                  <input type="date" name="createdAt" value={taskData.createdAt} onChange={handleInputChange} className={`mt-1 ${inputStyle}`} />
+                  <input type="date" name="createdAt" value={taskData.createdAt || ''} onChange={handleInputChange} className={`mt-1 ${inputStyle}`} />
                 </div>
                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">合同规定完成日期</label>
-                  <input type="date" name="contractualDueDate" value={taskData.contractualDueDate} onChange={handleInputChange} className={`mt-1 ${inputStyle}`} />
+                  <input type="date" name="contractualDueDate" value={taskData.contractualDueDate || ''} onChange={handleInputChange} className={`mt-1 ${inputStyle}`} />
                 </div>
              </div>
           </div>
