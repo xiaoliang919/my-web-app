@@ -29,7 +29,7 @@ const DropdownPortal = ({ children, inputRef }) => {
                 left: `${position.left}px`,
                 width: `${position.width}px`,
             }}
-            className="z-50 mt-1"
+            className="z-[9999] mt-1"
         >
             {/* 核心：max-h-56 限制了最大高度，overflow-y-auto 提供了内部滚动条 */}
             <div className="bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto dark:bg-slate-700 dark:border-slate-600">
